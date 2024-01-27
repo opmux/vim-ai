@@ -87,6 +87,30 @@ def gpt4(prompt):
 
 
 ######################################################################################################
+"""
+gpt4free module
+see https://github.com/xtekky/gpt4free#models for more models
+"""
+import requests
+ 
+def gpt4free(prompt):
+    url = "http://localhost:1337/v1/chat/completions"
+    body = {
+        "model": "gpt-3.5-turbo-16k",
+        # "model": "dolphin-mixtral-8x7b",
+        # "model": "codellama-34b-instruct",
+
+        "stream": False,
+        "messages": [
+            {"role": "assistant", "content": prompt}
+        ]
+    }
+    json_response = requests.post(url, json=body).json().get('choices', [])
+ 
+    for choice in json_response:
+        # print(choice.get('message', {}).get('content', ''))
+        return choice.get('message', {}).get('content', '')
+######################################################################################################
 
 # import utils
 plugin_root = vim.eval("s:plugin_root")
@@ -99,8 +123,10 @@ try:
     if prompt:
         print('Completing...')
         vim.command("redraw")
-        text_chunks = gpt3(prompt)
+        # text_chunks = prompt
+        # text_chunks = gpt3(prompt)
         # text_chunks = gpt4(prompt)
+        text_chunks = gpt4free(prompt)
         print(text_chunks)
         render_text_chunks(text_chunks, is_selection)
         clear_echo_message()
